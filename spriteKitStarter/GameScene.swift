@@ -74,6 +74,11 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         run(SKAction.repeatForever(SKAction.sequence([SKAction.run(addMonster),
             SKAction.wait(forDuration: 1.0)
         ])))
+        
+        //Adds some backgrund music. just like adding a sprte, addchild with SK_Node
+        let backgroundMusic = SKAudioNode(fileNamed: "background-music-aac")
+        backgroundMusic.autoplayLooped = true
+        addChild(backgroundMusic)
     }
 
     func random() -> CGFloat {
@@ -117,6 +122,9 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
     }
 
     override func touchesEnded(_ touches: Set<UITouch>, with event: UIEvent?) {
+        //playsound effect on touchend
+        run(SKAction.playSoundFileNamed("pew-pew-lei", waitForCompletion: false))
+        
         // Choose a touch to work with
         // Returns if there is no touch?
         guard let touch = touches.first else {
