@@ -9,6 +9,41 @@
 import SpriteKit
 import GameplayKit
 
+// Pre-Built Vector Math Functions
+// I should learn just what this "Vector Math" is anyway
+
+func + (left: CGPoint, right: CGPoint) -> CGPoint {
+    return CGPoint(x: left.x + right.x, y: left.y + right.y)
+}
+
+func - (left: CGPoint, right: CGPoint) -> CGPoint {
+    return CGPoint(x: left.x - right.x, y: left.y - right.y)
+}
+
+func * (point: CGPoint, scalar: CGFloat) -> CGPoint {
+    return CGPoint(x: point.x * scalar, y: point.y * scalar)
+}
+
+func / (point: CGPoint, scalar: CGFloat) -> CGPoint {
+    return CGPoint(x: point.x / scalar, y: point.y / scalar)
+}
+
+#if !(arch(x86_64) || arch(arm64))
+    func sqrt(a: CGFloat) -> CGFloat {
+        return CGFloat(sqrtf(Float(a)))
+    }
+#endif
+
+extension CGPoint {
+    func length() -> CGFloat {
+        return sqrt(x*x + y*y)
+    }
+    
+    func normalized() -> CGPoint {
+        return self / length()
+    }
+}
+
 class GameScene: SKScene {
     
     //1 Declare constant sprite, pass image name
@@ -60,4 +95,49 @@ class GameScene: SKScene {
         
     }
 
+    override func touchesEnded(_ touches: Set<UITouch>, with event: UIEvent?) {
+        // Choose a touch to work with
+        // Returns if there is no touch?
+        guard let touch = touches.first else {
+            return
+        }
+        let touchLocation = touch.location(in:self)
+        
+        // Set initial location of projection
+        let projectile = SKSpriteNode(imageNamed: "projectile") //Reminder: this creates a sprite constant with the image specified
+        projectile.position = player.position //because we want to shoot from the player
+        
+        //Determine offset for projectile
+        let offset = touchLocation - projectile.position
+        
+        //quit if touchlocation is behind  or parallel to player
+        if (offset.x < 0) {
+            return
+        }
+        
+        //add our sprite to screen now that we know its not shooting backwards
+        addChild(projectile)
+        
+        //determine direction to shoot projectile. normalized() converts a point coordinate into a V E C T O R
+        let direction = offset.normalized()
+        
+        //make is shoot far enough to be offsreen with big numbers
+        let shootAmount = direction * 1000
+        
+        //add shoot amount to current projectile position / Remember projectile hasn't moved yet
+        let realDest = shootAmount + projectile.position
+        
+        //create action functions using calculations from above
+        let actionMove = SKAction.move(to: realDest, duration: 2.0) //speed up by decreasing duration
+        let actionMoveDone = SKAction.removeFromParent() //This un-draws the sprite. Calling it after actionMove ensures the sprite is offscreen before we delete it.
+        projectile.run(SKAction.sequence([actionMove, actionMoveDone]))
+        
+        
+    }
+        
+        
+    
+    
+    
+    
 }
