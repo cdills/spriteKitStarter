@@ -15,7 +15,7 @@ class GameScene: SKScene {
     let player = SKSpriteNode(imageNamed: "player")
     
     override func didMove(to view: SKView) {
-        //2 obv
+        //2 sets background Color
         backgroundColor = SKColor.white
         //3 sets position at 10% vertically and centered horizontally- remember we are in landscape
         player.position = CGPoint(x: size.width * 0.1, y: size.height * 0.5)
